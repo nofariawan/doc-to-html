@@ -51,6 +51,7 @@ button { font: inherit; }
 .preview h1, .preview h2, .preview h3, .preview h4 { margin: 1em 0 .45em; line-height: 1.2; }
 .preview .document-title { text-align: center; font-size: 22px; margin-bottom: .2em; }
 .preview .document-subtitle, .preview .center, .preview .centered, .preview .docx-center { text-align: center; }
+.preview .docx-justify { text-align: justify; text-align-last: left; }
 .preview p.docx-center { margin: 0; line-height: 1.15; }
 .preview p.docx-center + p.docx-center { margin-top: .08em; }
 .preview p.docx-center + ol { margin-top: 1.25em; }

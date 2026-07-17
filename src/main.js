@@ -83,6 +83,7 @@ const documentCss = `
   .document-title { margin-bottom: .2em; text-align: center; font-size: 16pt; }
   .document-subtitle { margin-top: 0; text-align: center; font-weight: 700; }
   .center, .centered, .docx-center { text-align: center; }
+  .docx-justify { text-align: justify; text-align-last: left; }
   p.docx-center { margin: 0; line-height: 1.15; }
   p.docx-center + p.docx-center { margin-top: .08em; }
   p.docx-center + ol { margin-top: 1.25em; }
@@ -146,13 +147,20 @@ function wrapWithDocumentTemplate(content) {
 }
 
 const styleMap = [
+  "p[style-name='DocuHTML Justified']:ordered-list(1) => ol > li.docx-justify:fresh",
+  "p[style-name='DocuHTML Justified']:ordered-list(2) => ul|ol > li > ol > li.docx-justify:fresh",
+  "p[style-name='DocuHTML Justified']:ordered-list(3) => ul|ol > li > ul|ol > li > ol > li.docx-justify:fresh",
+  "p[style-name='DocuHTML Justified']:unordered-list(1) => ul > li.docx-justify:fresh",
+  "p[style-name='DocuHTML Justified']:unordered-list(2) => ul|ol > li > ul > li.docx-justify:fresh",
+  "p[style-name='DocuHTML Justified']:unordered-list(3) => ul|ol > li > ul|ol > li > ul > li.docx-justify:fresh",
   "p[style-name='Title'] => h1.document-title:fresh",
   "p[style-name='Judul'] => h1.document-title:fresh",
   "p[style-name='Subtitle'] => p.document-subtitle:fresh",
   "p[style-name='Subjudul'] => p.document-subtitle:fresh",
   "p[style-name='Centered'] => p.centered:fresh",
   "p[style-name='Center'] => p.center:fresh",
-  "p[style-name='DocuHTML Centered'] => p.docx-center:fresh"
+  "p[style-name='DocuHTML Centered'] => p.docx-center:fresh",
+  "p[style-name='DocuHTML Justified'] => p.docx-justify:fresh"
 ];
 
 function escapeHtml(value) {
@@ -205,6 +213,12 @@ function correctWordNumberingLevels(documentNode) {
     }
     if (node.type === "paragraph" && !node.numbering && node.alignment === "center") {
       node.styleName = "DocuHTML Centered";
+    }
+    if (node.type === "paragraph" && ["both", "justify"].includes(node.alignment)) {
+      const isSemanticHeading = /^(Title|Subtitle|Heading|Judul|Subjudul)/i.test(node.styleName || "");
+      if (!isSemanticHeading) {
+        node.styleName = "DocuHTML Justified";
+      }
     }
     node.children?.forEach(visit);
     return node;
