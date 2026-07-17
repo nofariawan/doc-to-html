@@ -161,13 +161,24 @@ function escapeHtml(value) {
   })[character]);
 }
 
-function sanitizeFileName(value) {
+function normalizeFileNameCharacters(value) {
   return value
-    .replace(/\.html$/i, "")
-    .replace(/[\s-]+/g, "_")
-    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9_]+/g, "_")
     .replace(/_+/g, "_")
-    .replace(/^_+|_+$/g, "") || "document";
+    .slice(0, 100);
+}
+
+function sanitizeFileName(value) {
+  let sanitized = normalizeFileNameCharacters(value.replace(/\.html$/i, ""))
+    .replace(/^_+|_+$/g, "");
+
+  if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(sanitized)) {
+    sanitized = `${sanitized}_file`;
+  }
+
+  return sanitized || "document";
 }
 
 function correctWordNumberingLevels(documentNode) {
@@ -384,10 +395,7 @@ $("#copyButton").addEventListener("click", (event) => copyHtml(event.currentTarg
 $("#copyBottomButton").addEventListener("click", (event) => copyHtml(event.currentTarget));
 $("#downloadButton").addEventListener("click", downloadHtml);
 $("#outputFileName").addEventListener("input", (event) => {
-  const normalized = event.currentTarget.value
-    .replace(/[\s-]+/g, "_")
-    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "")
-    .replace(/_+/g, "_");
+  const normalized = normalizeFileNameCharacters(event.currentTarget.value);
   event.currentTarget.value = normalized;
   currentFileName = normalized || "document";
 });
