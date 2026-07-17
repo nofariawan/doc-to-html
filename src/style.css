@@ -69,7 +69,7 @@ button { font: inherit; }
 .preview img { max-width: 100%; height: auto; }
 .preview table { border-collapse: collapse; width: 100%; margin: .85em 0 1.1em; }
 .preview td, .preview th { border: 1px solid #222; padding: 6px 8px; vertical-align: top; }
-.preview th { padding: 7px 8px 1px; color: white; background: #d00000; text-align: center; vertical-align: middle; line-height: 1.12; }
+.preview th { padding: 5px 8px; color: white; background: #d00000; text-align: center; vertical-align: middle; line-height: 1.12; }
 .preview table tr:first-child td { font-weight: 700; text-align: center; }
 .preview td p, .preview th p { margin: 0; }
 .preview .document-header { margin: -8px 0 24px; padding: 9px 0 22px; border-bottom: 1px solid #e5e5e5; }

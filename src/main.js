@@ -99,7 +99,7 @@ const documentCss = `
   ol.list-continuation-sub { margin-left: 2em; }
   table { width: 100%; margin: .85em 0 1.1em; border-collapse: collapse; page-break-inside: avoid; }
   th, td { padding: 6px 8px; border: 1px solid #222; vertical-align: top; }
-  th { padding: 7px 8px 1px; background: #d00000; color: #fff; text-align: center; vertical-align: middle; font-weight: 700; line-height: 1.12; }
+  th { padding: 5px 8px; background: #d00000; color: #fff; text-align: center; vertical-align: middle; font-weight: 700; line-height: 1.12; }
   table tr:first-child td { font-weight: 700; text-align: center; }
   td p, th p { margin: 0; }
   img { max-width: 100%; height: auto; }
