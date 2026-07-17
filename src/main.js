@@ -15,7 +15,7 @@ app.innerHTML = `
 
     <section class="hero">
       <span class="eyebrow">DOCX → HTML</span>
-      <h1>Ubah dokumen Word<br><em>menjadi HTML bersih.</em></h1>
+      <h1>TNC Doc to HTML Converter</em></h1>
       <p>Konversi heading, paragraf, tabel, daftar, tautan, dan gambar tanpa mengunggah dokumen Anda ke server.</p>
     </section>
 
@@ -33,7 +33,11 @@ app.innerHTML = `
         <div class="filebar">
           <div>
             <span class="word-icon">W</span>
-            <span><strong id="fileName"></strong><small id="fileSize"></small></span>
+            <span class="file-details">
+              <label for="outputFileName">Nama file output</label>
+              <span class="file-name-field"><input id="outputFileName" type="text" aria-label="Nama file output" /><span>.html</span></span>
+              <small id="fileSize"></small>
+            </span>
           </div>
           <button id="resetButton" class="text-button" type="button">Ganti file</button>
         </div>
@@ -155,6 +159,15 @@ function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[character]);
+}
+
+function sanitizeFileName(value) {
+  return value
+    .replace(/\.html$/i, "")
+    .replace(/[\s-]+/g, "_")
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "") || "document";
 }
 
 function correctWordNumberingLevels(documentNode) {
@@ -311,8 +324,8 @@ async function convertFile(file) {
     });
 
     const normalizedHtml = normalizeNumbering(conversion.value);
-    currentFileName = file.name.replace(/\.docx$/i, "");
-    $("#fileName").textContent = file.name;
+    currentFileName = sanitizeFileName(file.name.replace(/\.docx$/i, ""));
+    $("#outputFileName").value = currentFileName;
     $("#fileSize").textContent = formatBytes(file.size);
     $("#preview").innerHTML = wrapWithDocumentTemplate(normalizedHtml || "<p>Dokumen tidak memiliki konten yang dapat dikonversi.</p>");
     htmlOutput.value = normalizedHtml;
@@ -370,4 +383,16 @@ $("#resetButton").addEventListener("click", () => { result.classList.add("hidden
 $("#copyButton").addEventListener("click", (event) => copyHtml(event.currentTarget));
 $("#copyBottomButton").addEventListener("click", (event) => copyHtml(event.currentTarget));
 $("#downloadButton").addEventListener("click", downloadHtml);
+$("#outputFileName").addEventListener("input", (event) => {
+  const normalized = event.currentTarget.value
+    .replace(/[\s-]+/g, "_")
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "")
+    .replace(/_+/g, "_");
+  event.currentTarget.value = normalized;
+  currentFileName = normalized || "document";
+});
+$("#outputFileName").addEventListener("blur", (event) => {
+  currentFileName = sanitizeFileName(event.currentTarget.value);
+  event.currentTarget.value = currentFileName;
+});
 htmlOutput.addEventListener("input", () => { $("#preview").innerHTML = wrapWithDocumentTemplate(htmlOutput.value); });
